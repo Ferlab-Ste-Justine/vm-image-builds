@@ -1,0 +1,2 @@
+builds/*/*.pkrvars.hcl
+builds/*/output/

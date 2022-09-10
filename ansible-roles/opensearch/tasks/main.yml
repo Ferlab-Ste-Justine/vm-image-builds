@@ -1,0 +1,35 @@
+- name: Install Opensearch Automation Packages
+  ansible.builtin.apt:
+    pkg: 
+      - curl
+      - jq
+    update_cache: yes
+- name: Download Opensearch
+  get_url:
+    url: https://artifacts.opensearch.org/releases/bundle/opensearch/2.2.1/opensearch-2.2.1-linux-x64.tar.gz
+    dest: /opt/opensearch.tar.gz
+    mode: 0555
+- name: Get sha256 Sum of Opensearch Download
+  stat:
+    path: /opt/opensearch.tar.gz
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: opensearch_tar_stat
+- name: Verify Opensearch Checksum Match Expected Value
+  fail:
+    msg: "Failure: opensearch download doesn't have expected checksum."
+  when: opensearch_tar_stat.stat.checksum != '259526b62b099f0bc3b8c5723c53332a5127cdace60c89ea1404daed916f7207'
+- name: Extract Opensearch From Tar Archive
+  ansible.builtin.unarchive:
+    src: /opt/opensearch.tar.gz
+    dest: /opt
+    remote_src: yes
+- name: Rename Opensearch Directory
+  ansible.builtin.copy:
+    src: /opt/opensearch-2.2.1
+    dest: /opt/opensearch
+    remote_src: yes
+- name: Delete Opensearch Downloaded Artifact
+  ansible.builtin.file:
+    path: /opt/opensearch.tar.gz
+    state: absent

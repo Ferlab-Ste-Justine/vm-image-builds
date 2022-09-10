@@ -1,0 +1,5 @@
+- name: Install chrony
+  ansible.builtin.apt:
+    pkg: 
+      - chrony
+    update_cache: yes

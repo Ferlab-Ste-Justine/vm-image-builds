@@ -1,0 +1,15 @@
+- name: Install ruby
+  ansible.builtin.apt:
+    pkg: 
+      - ruby-full
+      - build-essential
+    update_cache: yes
+- name: Install fluentd
+  community.general.gem:
+    name: fluentd
+    state: present
+- name: Install fluentd Systemd Plugin
+  community.general.gem:
+    name: fluent-plugin-systemd
+    version: 1.0.5
+    state: present

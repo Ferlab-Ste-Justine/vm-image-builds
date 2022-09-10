@@ -1,0 +1,40 @@
+- name: Download Node Exporter
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
+    dest: /opt/node_exporter.tar.gz
+    mode: 0555
+- name: Get sha256 Sum of Node Exporter Download
+  stat:
+    path: /opt/node_exporter.tar.gz
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: node_exporter_tar_stat
+- name: Verify Node Exporter Checksum Match Expected Value
+  fail:
+    msg: "Failure: node exporter download doesn't have expected checksum."
+  when: node_exporter_tar_stat.stat.checksum != '68f3802c2dd3980667e4ba65ea2e1fb03f4a4ba026cca375f15a0390ff850949'
+- name: Create Node Exporter Untar Directory
+  ansible.builtin.file:
+    path: /opt/node_exporter
+    state: directory
+- name: Extract Node Exporter From Tar Archive
+  ansible.builtin.unarchive:
+    src: /opt/node_exporter.tar.gz
+    dest: /opt/node_exporter
+    remote_src: yes
+- name: Copy Node Exporter Executable
+  ansible.builtin.copy:
+    src: /opt/node_exporter/node_exporter-1.3.1.linux-amd64/node_exporter
+    dest: /usr/local/bin/node_exporter
+    owner: root
+    group: root
+    mode: '0555'
+    remote_src: yes
+- name: Delete Node Exporter Downloaded Artifact
+  ansible.builtin.file:
+    path: /opt/node_exporter.tar.gz
+    state: absent
+- name: Delete Node Exporter Untar Directory
+  ansible.builtin.file:
+    path: /opt/node_exporter
+    state: absent
