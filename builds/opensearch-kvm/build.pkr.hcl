@@ -22,6 +22,11 @@ variable "vm_name" {
   default = "opensearch-build"
 }
 
+variable "troubleshooting" {
+  type = bool  
+  default = false
+}
+
 source "qemu" "opensearch" {
   vm_name              = var.vm_name
   iso_url              = var.iso.url
@@ -64,5 +69,14 @@ build {
 
   provisioner "ansible" {
     playbook_file = "${path.root}/ansible/playbook.yml"
+  }
+
+  provisioner "shell" {
+    inline = ["sudo cloud-init clean -ls"]
+  }
+
+  provisioner "breakpoint" {
+    disable = !var.troubleshooting
+    note    = "Troubleshoot breakpoint"
   }
 }

@@ -1,3 +1,8 @@
+- name: Create Opensearch User
+  ansible.builtin.user:
+    name: opensearch
+    system: yes
+    password_lock: yes
 - name: Install Opensearch Automation Packages
   ansible.builtin.apt:
     pkg: 
@@ -24,11 +29,17 @@
     src: /opt/opensearch.tar.gz
     dest: /opt
     remote_src: yes
-- name: Rename Opensearch Directory
+- name: Copy Opensearch Directory
   ansible.builtin.copy:
     src: /opt/opensearch-2.2.1
     dest: /opt/opensearch
+    owner: opensearch
+    group: opensearch
     remote_src: yes
+- name: Delete Opensearch Copied Opensearch Directory
+  ansible.builtin.file:
+    path: /opt/opensearch-2.2.1
+    state: absent
 - name: Delete Opensearch Downloaded Artifact
   ansible.builtin.file:
     path: /opt/opensearch.tar.gz
