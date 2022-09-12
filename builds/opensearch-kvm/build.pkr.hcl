@@ -27,11 +27,16 @@ variable "troubleshooting" {
   default = false
 }
 
+variable "output_directory" {
+  type = string
+  default = "output"
+}
+
 source "qemu" "opensearch" {
   vm_name              = var.vm_name
   iso_url              = var.iso.url
   iso_checksum         = var.iso.checksum
-  output_directory     = "output"
+  output_directory     = var.output_directory
   shutdown_command     = "sudo shutdown -P now"
   use_backing_file     = true
   disk_image           = true

@@ -31,7 +31,7 @@
     remote_src: yes
 - name: Copy Opensearch Directory
   ansible.builtin.copy:
-    src: /opt/opensearch-2.2.1
+    src: /opt/opensearch-2.2.1/
     dest: /opt/opensearch
     owner: opensearch
     group: opensearch
