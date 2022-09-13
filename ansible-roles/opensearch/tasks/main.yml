@@ -44,3 +44,24 @@
   ansible.builtin.file:
     path: /opt/opensearch.tar.gz
     state: absent
+- name: Download Opensearch Prometheus Plugin
+  get_url:
+    url: https://github.com/aiven/prometheus-exporter-plugin-for-opensearch/releases/download/2.2.1.0/prometheus-exporter-2.2.1.0.zip
+    dest: /opt/prometheus-exporter-2.2.1.0.zip
+    mode: 0555
+- name: Get sha256 Sum of Opensearch Prometheus Plugin Download
+  stat:
+    path: /opt/prometheus-exporter-2.2.1.0.zip
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: opensearch_prometheus_plugin_tar_stat
+- name: Verify Opensearch Prometheus Plugin Checksum Match Expected Value
+  fail:
+    msg: "Failure: opensearch prometheus plugin download doesn't have expected checksum."
+  when: opensearch_prometheus_plugin_tar_stat.stat.checksum != '34c4ac68fcc4c1fe237e7986fde73cf4a46a9870a1591b34d59f1c0e77341b86'
+- name: Install Opensearch Prometheus Plugin
+  ansible.builtin.shell: /opt/opensearch/bin/opensearch-plugin install -b file:/opt/prometheus-exporter-2.2.1.0.zip
+- name: Delete Opensearch Prometheus Plugin Downloaded Artifact
+  ansible.builtin.file:
+    path: /opt/prometheus-exporter-2.2.1.0.zip
+    state: absent
