@@ -32,7 +32,7 @@
     path: /etc/prometheus
     owner: prometheus
     group: prometheus
-    mode: '0550'
+    mode: '0770'
     state: directory
 - name: Copy Prometheus Console Libraries
   ansible.builtin.copy:
