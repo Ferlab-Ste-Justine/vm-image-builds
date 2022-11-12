@@ -1,0 +1,76 @@
+- name: Create Prometheus User
+  ansible.builtin.user:
+    name: prometheus
+    system: yes
+    password_lock: yes
+- name: Download Prometheus
+  get_url:
+    url: https://github.com/prometheus/prometheus/releases/download/v2.40.1/prometheus-2.40.1.linux-amd64.tar.gz
+    dest: /opt/prometheus.tar.gz
+    mode: 0555
+- name: Get sha256 Sum of Prometheus Download
+  stat:
+    path: /opt/prometheus.tar.gz
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: prometheus_tar_stat
+- name: Verify Prometheus Checksum Match Expected Value
+  fail:
+    msg: "Failure: prometheus download doesn't have expected checksum."
+  when: prometheus_tar_stat.stat.checksum != '6435bb6449cb43d89de01fe167280941f2cede1891ba505eed7acc6d7442c337'
+- name: Create Prometheus Untar Directory
+  ansible.builtin.file:
+    path: /opt/prometheus
+    state: directory
+- name: Extract Prometheus From Tar Archive
+  ansible.builtin.unarchive:
+    src: /opt/prometheus.tar.gz
+    dest: /opt/prometheus
+    remote_src: yes
+- name: Create Prometheus Console Parent Directory
+  ansible.builtin.file:
+    path: /etc/prometheus
+    owner: prometheus
+    group: prometheus
+    mode: '0550'
+    state: directory
+- name: Copy Prometheus Console Libraries
+  ansible.builtin.copy:
+    src: /opt/prometheus/prometheus-2.40.1.linux-amd64/console_libraries
+    dest: /etc/prometheus
+    owner: prometheus
+    group: prometheus
+    mode: '0444'
+    remote_src: yes
+- name: Copy Prometheus Consoles
+  ansible.builtin.copy:
+    src: /opt/prometheus/prometheus-2.40.1.linux-amd64/consoles
+    dest: /etc/prometheus
+    owner: prometheus
+    group: prometheus
+    mode: '0444'
+    remote_src: yes
+- name: Copy Prometheus Binary
+  ansible.builtin.copy:
+    src: /opt/prometheus/prometheus-2.40.1.linux-amd64/prometheus
+    dest: /usr/local/bin/prometheus
+    owner: root
+    group: root
+    mode: '0555'
+    remote_src: yes
+- name: Copy Promtool Binary
+  ansible.builtin.copy:
+    src: /opt/prometheus/prometheus-2.40.1.linux-amd64/promtool
+    dest: /usr/local/bin/prometool
+    owner: root
+    group: root
+    mode: '0555'
+    remote_src: yes
+- name: Delete Prometheus Downloaded Artifact
+  ansible.builtin.file:
+    path: /opt/prometheus.tar.gz
+    state: absent
+- name: Delete Prometheus Untar Directory
+  ansible.builtin.file:
+    path: /opt/prometheus
+    state: absent
