@@ -1,6 +1,6 @@
 - name: Download Configurations Auto Updater
   get_url:
-    url: https://github.com/Ferlab-Ste-Justine/configurations-auto-updater/releases/download/v0.2.0/configurations-auto-updater_0.2.0_linux_amd64.tar.gz
+    url: https://github.com/Ferlab-Ste-Justine/configurations-auto-updater/releases/download/v0.2.1/configurations-auto-updater_0.2.1_linux_amd64.tar.gz
     dest: /opt/configurations-auto-updater.tar.gz
     mode: 0555
 - name: Get sha256 Sum of Configurations Auto Updater Download
@@ -12,7 +12,7 @@
 - name: Verify Configurations Auto Updater Checksum Match Expected Value
   fail:
     msg: "Failure: configurations auto updater download doesn't have expected checksum."
-  when: configurations_auto_updater_tar_stat.stat.checksum != '673cbd3ad21065f5bec6e8d77b3c5560264708dbe39a04cf2af809dae6c40ac3'
+  when: configurations_auto_updater_tar_stat.stat.checksum != '5b982c89e34148002845a9102f4661b601ab27859d0bb7909373f975ea01ba97'
 - name: Create Configurations Auto Updater Untar Directory
   ansible.builtin.file:
     path: /opt/configurations-auto-updater
