@@ -1,0 +1,53 @@
+- name: Create Etcd User
+  ansible.builtin.user:
+    name: etcd
+    system: yes
+    password_lock: yes
+- name: Download Etcd
+  get_url:
+    url: https://storage.googleapis.com/etcd/v3.5.6/etcd-v3.5.6-linux-amd64.tar.gz
+    dest: /opt/etcd.tar.gz
+    mode: 0555
+- name: Get sha256 Sum of Etcd Download
+  stat:
+    path: /opt/etcd.tar.gz
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: etcd_tar_stat
+- name: Verify Etcd Checksum Match Expected Value
+  fail:
+    msg: "Failure: etcd download doesn't have expected checksum."
+  when: etcd_tar_stat.stat.checksum != '4db32e3bc06dd0999e2171f76a87c1cffed8369475ec7aa7abee9023635670fb'
+- name: Create Etcd Untar Directory
+  ansible.builtin.file:
+    path: /opt/etcd
+    state: directory
+- name: Extract Etcd From Tar Archive
+  ansible.builtin.unarchive:
+    src: /opt/etcd.tar.gz
+    dest: /opt/etcd
+    remote_src: yes
+- name: Copy Etcd Server Binary
+  ansible.builtin.copy:
+    src: /opt/etcd/etcd-v3.5.6-linux-amd64/etcd
+    dest: /usr/local/bin/etcd
+    owner: root
+    group: root
+    mode: '0555'
+    remote_src: yes
+- name: Copy Etcd Client Binary
+  ansible.builtin.copy:
+    src: /opt/etcd/etcd-v3.5.6-linux-amd64/etcdctl
+    dest: /usr/local/bin/etcdctl
+    owner: root
+    group: root
+    mode: '0555'
+    remote_src: yes
+- name: Delete Etcd Downloaded Artifact
+  ansible.builtin.file:
+    path: /opt/etcd.tar.gz
+    state: absent
+- name: Delete Etcd Untar Directory
+  ansible.builtin.file:
+    path: /opt/etcd
+    state: absent
