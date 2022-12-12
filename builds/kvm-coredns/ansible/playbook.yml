@@ -1,0 +1,20 @@
+- name: Setup Chrony
+  hosts: all
+  roles:
+    - { role: ../../../ansible-roles/chrony, become: true }
+- name: Setup Fluentd
+  hosts: all
+  roles:
+    - { role: ../../../ansible-roles/fluentd, become: true }
+- name: Setup Prometheus Node Exporter
+  hosts: all
+  roles:
+    - { role: ../../../ansible-roles/prometheus-node-exporter, become: true }
+- name: Setup Coredns
+  hosts: all
+  roles:
+    - { role: ../../../ansible-roles/coredns, become: true }
+- name: Configurations Auto Updater
+  hosts: all
+  roles:
+    - { role: ../../../ansible-roles/configurations-auto-updater, become: true }

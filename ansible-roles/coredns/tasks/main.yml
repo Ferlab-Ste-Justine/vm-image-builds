@@ -1,0 +1,45 @@
+- name: Install unzip
+  ansible.builtin.apt:
+    pkg: 
+      - unzip
+    update_cache: yes
+- name: Download Coredns
+  get_url:
+    url: https://github.com/Ferlab-Ste-Justine/ferlab-coredns/releases/download/v1.1.1/linux-amd64.zip
+    dest: /opt/coredns.zip
+    mode: 0555
+- name: Get sha256 Sum of Configurations Auto Updater Download
+  stat:
+    path: /opt/coredns.zip
+    checksum_algorithm: sha256
+    get_checksum: yes
+  register: coredns_zip_stat
+- name: Verify Coredns Checksum Match Expected Value
+  fail:
+    msg: "Failure: coredns download doesn't have expected checksum."
+  when: coredns_zip_stat.stat.checksum != 'b83158759360a817d7552ad3e293cb194f6ab7295b60d0400767ccb422e12dff'
+- name: Create Coredns Unzip Directory
+  ansible.builtin.file:
+    path: /opt/coredns
+    state: directory
+- name: Extract Coredns From Tar Archive
+  ansible.builtin.unarchive:
+    src: /opt/coredns.zip
+    dest: /opt/coredns
+    remote_src: yes
+- name: Copy Coredns Binary
+  ansible.builtin.copy:
+    src: /opt/coredns/linux-amd64/coredns
+    dest: /usr/local/bin/coredns
+    owner: root
+    group: root
+    mode: '0555'
+    remote_src: yes
+- name: Delete Coredns Downloaded Artifact
+  ansible.builtin.file:
+    path: /opt/coredns.zip
+    state: absent
+- name: Delete Coredns Unzip Directory
+  ansible.builtin.file:
+    path: /opt/coredns
+    state: absent
