@@ -1,3 +1,8 @@
+- name: Create Coredns User
+  ansible.builtin.user:
+    name: coredns
+    system: yes
+    password_lock: yes
 - name: Install unzip
   ansible.builtin.apt:
     pkg: 
