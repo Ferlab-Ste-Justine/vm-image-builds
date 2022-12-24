@@ -5,7 +5,7 @@
     password_lock: yes
 - name: Download Prometheus
   get_url:
-    url: https://github.com/prometheus/prometheus/releases/download/v2.40.1/prometheus-2.40.1.linux-amd64.tar.gz
+    url: https://github.com/prometheus/prometheus/releases/download/v2.40.7/prometheus-2.40.7.linux-amd64.tar.gz
     dest: /opt/prometheus.tar.gz
     mode: 0555
 - name: Get sha256 Sum of Prometheus Download
@@ -17,7 +17,7 @@
 - name: Verify Prometheus Checksum Match Expected Value
   fail:
     msg: "Failure: prometheus download doesn't have expected checksum."
-  when: prometheus_tar_stat.stat.checksum != '6435bb6449cb43d89de01fe167280941f2cede1891ba505eed7acc6d7442c337'
+  when: prometheus_tar_stat.stat.checksum != 'c1b40a6f510355564b445dc68fa3c3e6af278cc55fcf36821b9e18f96b4c4cde'
 - name: Create Prometheus Untar Directory
   ansible.builtin.file:
     path: /opt/prometheus
@@ -36,7 +36,7 @@
     state: directory
 - name: Copy Prometheus Console Libraries
   ansible.builtin.copy:
-    src: /opt/prometheus/prometheus-2.40.1.linux-amd64/console_libraries
+    src: /opt/prometheus/prometheus-2.40.7.linux-amd64/console_libraries
     dest: /etc/prometheus
     owner: prometheus
     group: prometheus
@@ -44,7 +44,7 @@
     remote_src: yes
 - name: Copy Prometheus Consoles
   ansible.builtin.copy:
-    src: /opt/prometheus/prometheus-2.40.1.linux-amd64/consoles
+    src: /opt/prometheus/prometheus-2.40.7.linux-amd64/consoles
     dest: /etc/prometheus
     owner: prometheus
     group: prometheus
@@ -52,7 +52,7 @@
     remote_src: yes
 - name: Copy Prometheus Binary
   ansible.builtin.copy:
-    src: /opt/prometheus/prometheus-2.40.1.linux-amd64/prometheus
+    src: /opt/prometheus/prometheus-2.40.7.linux-amd64/prometheus
     dest: /usr/local/bin/prometheus
     owner: root
     group: root
@@ -60,7 +60,7 @@
     remote_src: yes
 - name: Copy Promtool Binary
   ansible.builtin.copy:
-    src: /opt/prometheus/prometheus-2.40.1.linux-amd64/promtool
+    src: /opt/prometheus/prometheus-2.40.7.linux-amd64/promtool
     dest: /usr/local/bin/prometool
     owner: root
     group: root
