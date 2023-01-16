@@ -1,0 +1,32 @@
+- name: Install Docker Dependencies
+  ansible.builtin.apt:
+    pkg: 
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+    update_cache: yes
+- name: Add Docker Repo Key to Trust List
+  ansible.builtin.shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+- name: Add Docker Repo to Package Manager Sources
+  ansible.builtin.shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+- name: Install Docker Packages
+  ansible.builtin.apt:
+    pkg: 
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    update_cache: yes
+- name: Start Docker Service
+  ansible.builtin.systemd:
+    enabled: no
+    state: started
+    name: docker.service
+- name: Pull Haproxy Docker Image
+  ansible.builtin.shell: docker pull haproxy:2.2.14
+- name: Stop Docker Service
+  ansible.builtin.systemd:
+    enabled: no
+    state: stopped
+    name: docker.service
