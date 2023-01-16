@@ -1,0 +1,35 @@
+- name: Install Postgres/Patroni Dependencies
+  ansible.builtin.apt:
+    pkg: 
+      - python3
+      - python3-pip
+      - lsb-release
+      - wget
+      - gnupg-agent
+      - libpq-dev
+    update_cache: yes
+- name: Add Postgres Repo to Package Manager Sources
+  ansible.builtin.shell: echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+- name: Add Postgres Repo Key to Trust List
+  ansible.builtin.shell: wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+- name: Install Postgres Packages
+  ansible.builtin.apt:
+    pkg: 
+      - postgresql-14
+      - postgresql-contrib-14
+    update_cache: yes
+- name: Stop and Disable Built-In Postgres Service
+  ansible.builtin.systemd:
+    enabled: no
+    state: stopped
+    name: postgresql.service
+- name: Cleanup Postgres Logs Directory
+  ansible.builtin.shell: rm /var/log/postgresql/*
+- name: Install Python Postgres Bindings
+  ansible.builtin.pip:
+    name: psycopg2>=2.5.4
+    executable: pip3
+- name: Install Patroni
+  ansible.builtin.pip:
+    name: patroni[etcd3]
+    executable: pip3

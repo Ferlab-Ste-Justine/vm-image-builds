@@ -19,7 +19,7 @@ variable "admin_user" {
 
 variable "vm_name" {
   type = string
-  default = "prometheus-build"
+  default = "postgres-load-balancer-build"
 }
 
 variable "troubleshooting" {
@@ -32,7 +32,7 @@ variable "output_directory" {
   default = "output"
 }
 
-source "qemu" "prometheus" {
+source "qemu" "postgres_load_balancer" {
   vm_name              = var.vm_name
   iso_url              = var.iso.url
   iso_checksum         = var.iso.checksum
@@ -65,12 +65,12 @@ source "qemu" "prometheus" {
   }
 
   qemuargs = [
-    ["-smbios", "type=1,serial=ds=nocloud-net;instance-id=prometheus;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/"]
+    ["-smbios", "type=1,serial=ds=nocloud-net;instance-id=postgres-load-balancer;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/"]
   ]
 }
 
 build {
-  sources = ["source.qemu.prometheus"]
+  sources = ["source.qemu.postgres_load_balancer"]
 
   provisioner "ansible" {
     playbook_file = "${path.root}/ansible/playbook.yml"
